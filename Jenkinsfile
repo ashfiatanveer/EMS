@@ -5,6 +5,8 @@ pipeline {
         // Set the Python version and virtual environment directory
         PYTHON_VERSION = 'python3.9'
         VENV_DIR = '.venv'
+        TEST_ZIP = 'Unit Tests/task.zip'  // Path to the zip file in your repository
+        TEST_DIR = 'Unit Tests/test_files'  // Directory to extract the test files
     }
 
     stages {
@@ -33,11 +35,20 @@ pipeline {
             }
         }
 
+        stage('Extract Test Files') {
+            steps {
+                script {
+                    // Unzip the test files into a specific directory
+                    sh 'unzip -o ${TEST_ZIP} -d ${TEST_DIR}'  // Extract test files from zip
+                }
+            }
+        }
+
         stage('Run Tests') {
             steps {
                 script {
-                    // Run tests (assuming you are using pytest or another testing tool)
-                    sh '${VENV_DIR}/bin/pytest'
+                    // Run tests using pytest from the test directory
+                    sh '${VENV_DIR}/bin/pytest ${TEST_DIR}'
                 }
             }
         }
@@ -68,3 +79,4 @@ pipeline {
         }
     }
 }
+
