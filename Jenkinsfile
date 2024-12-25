@@ -38,28 +38,22 @@ pipeline {
             }
         }
 
-        stage('Extract Test Files') {
-            steps {
-                script {
-                    sh 'ls Unit\\ Tests'  // Ensure the zip file exists
-                    sh 'unzip -o ${TEST_ZIP} -d ${TEST_DIR}'  // Extract the test files
-                }
-            }
-        }
+        // Remove the Extract Test Files stage as it's no longer needed
 
-        stage('Verify Test Files') {
-            steps {
-                script {
-                    echo "Verifying test files..."
-                    sh 'ls -R ${TEST_DIR}'  // List the files to verify extraction
-                }
-            }
-        }
+        // stage('Verify Test Files') { 
+        //     steps {
+        //         script {
+        //             echo "Verifying test files..."
+        //             sh 'ls -R ${TEST_DIR}'  // List the files to verify extraction
+        //         }
+        //     }
+        // }
 
         stage('Run Tests') {
             steps {
                 script {
-                    sh '${VENV_DIR}/bin/pytest -v ${TEST_DIR}'  // Run the tests with verbose output
+                    // Modify the pytest command to run tests from the "Tests" directory
+                    sh '${VENV_DIR}/bin/pytest -v Tests/' 
                 }
             }
         }
