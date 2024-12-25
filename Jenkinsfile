@@ -5,8 +5,7 @@ pipeline {
         // Set the Python version and virtual environment directory
         PYTHON_VERSION = 'python3.9'
         VENV_DIR = '.venv'
-        TEST_ZIP = 'Unit Tests/task.zip'  // Path to the zip file in your repository
-        TEST_DIR = 'Unit Tests/test_files'  // Directory to extract the test files
+        TEST_DIR = 'Unit Tests'  // Directory where the test files are located
     }
 
     stages {
@@ -35,11 +34,11 @@ pipeline {
             }
         }
 
-        stage('Extract Test Files') {
+        stage('Verify Test Files') {
             steps {
                 script {
-                    // Unzip the test files into a specific directory
-                    sh 'unzip -o ${TEST_ZIP} -d ${TEST_DIR}'  // Extract test files from zip
+                    echo "Verifying test files in ${TEST_DIR}..."
+                    sh 'ls -R ${TEST_DIR}'  // List all files in the Unit Tests directory
                 }
             }
         }
@@ -47,7 +46,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run tests using pytest from the test directory
+                    // Run tests using pytest from the Unit Tests directory
                     sh '${VENV_DIR}/bin/pytest ${TEST_DIR}'
                 }
             }
@@ -56,11 +55,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Add deployment steps here (e.g., deploying to a cloud service, running a Docker container, etc.)
+                    // Add deployment steps here if needed
                     echo 'Deploying the application...'
-                    // Example: docker build and push to container registry (if applicable)
-                    // sh 'docker build -t my-flask-app .'
-                    // sh 'docker push my-flask-app'
                 }
             }
         }
@@ -79,4 +75,5 @@ pipeline {
         }
     }
 }
+
 
