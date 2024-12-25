@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Run Tests') {
             steps {
-                bat 'C:\\Python312\\Scripts\\pytest.exe -v tests/'
+                bat 'set PYTHONPATH=%cd%\\src && C:\\Python312\\Scripts\\pytest.exe -v Tests/'
             }
         }
     }
@@ -25,5 +25,3 @@ pipeline {
         }
     }
 }
-
-
