@@ -1,17 +1,24 @@
 pipeline {
     agent any
 
-    environment {
-        PYTHON_VERSION = 'python3.9'
-        VENV_DIR = '.venv'
-        TEST_ZIP = 'Unit Tests/task.zip'
-        TEST_DIR = 'Unit Tests/test_files'
-    }
-
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Fetch Changes') {
+            steps {
+                script {
+                    sh "git.exe rev-parse-resolve-git-dir"
+                    sh "git.exe config remote.origin.url"
+                    sh "git.exe-version"
+                    sh "git.exe fetch-tags-force-progress"
+                    sh "git.exe rev-parse"
+                    sh "git.exe checkout"
+                    sh "git.exe rev-list"
+                }
             }
         }
 
