@@ -2,73 +2,38 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Fetch Changes') {
-            steps {
-                script {
-                    sh "git.exe rev-parse-resolve-git-dir"
-                    sh "git.exe config remote.origin.url"
-                    sh "git.exe-version"
-                    sh "git.exe fetch-tags-force-progress"
-                    sh "git.exe rev-parse"
-                    sh "git.exe checkout"
-                    sh "git.exe rev-list"
-                }
-            }
-        }
-
-        stage('Set up Python Environment') {
-            steps {
-                script {
-                    sh '${PYTHON_VERSION} -m venv ${VENV_DIR}'
-                }
+                git branch: 'main', 
+                    url: 'https://github.com/YourUsername/YourRepo', 
+                    credentialsId: 'github-token'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    sh '${VENV_DIR}/bin/pip install -r requirements.txt'
-                }
+                bat 'C:\\Users\\ashfi\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip install --upgrade pip' // Upgrade pip
+                bat 'C:\\Users\\ashfi\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pip install -r requirements.txt' // Install dependencies
             }
         }
 
-        // Remove the Extract Test Files stage as it's no longer needed
-
-        // stage('Verify Test Files') { 
-        //     steps {
-        //         script {
-        //             echo "Verifying test files..."
-        //             sh 'ls -R ${TEST_DIR}'  // List the files to verify extraction
-        //         }
-        //     }
-        // }
-
         stage('Run Tests') {
             steps {
-                script {
-                    // Modify the pytest command to run tests from the "Tests" directory
-                    sh '${VENV_DIR}/bin/pytest -v Tests/' 
-                }
+                bat 'C:\\Users\\ashfi\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\pytest.exe -v tests/' // Run tests
             }
         }
     }
 
     post {
         always {
-            sh 'rm -rf ${VENV_DIR}'  // Clean up the virtual environment
+            echo 'Pipeline completed.'
         }
         success {
-            echo 'The pipeline completed successfully.'
-            junit '**/test-results.xml'  // Publish test results
+            echo 'Pipeline executed successfully!'
         }
         failure {
-            echo 'The pipeline failed.'
+            echo 'Pipeline failed. Please check the logs.'
         }
     }
 }
+
