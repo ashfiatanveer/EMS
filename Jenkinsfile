@@ -2,29 +2,24 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSION = 'python3.9'
+        // Set the Python version and virtual environment directory
+        PYTHON_VERSION = 'python3.9'  // Adjust the Python version as needed
         VENV_DIR = '.venv'
-        TEST_DIR = 'Unit Tests'
+        TEST_DIR = 'Unit Tests'  // Directory where the test files are located
     }
 
     stages {
         stage('Checkout') {
             steps {
+                // Checkout the repository
                 checkout scm
-            }
-        }
-
-        stage('Check Python Version') {
-            steps {
-                script {
-                    sh 'python3.9 --version || python --version'
-                }
             }
         }
 
         stage('Set up Python Environment') {
             steps {
                 script {
+                    // Install virtual environment
                     sh '${PYTHON_VERSION} -m venv ${VENV_DIR}'
                 }
             }
@@ -33,15 +28,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
+                    // Install the dependencies from requirements.txt
                     sh '${VENV_DIR}/bin/pip install -r requirements.txt'
-                }
-            }
-        }
-
-        stage('Debug Virtual Environment') {
-            steps {
-                script {
-                    sh 'ls -R ${VENV_DIR}'
                 }
             }
         }
@@ -50,7 +38,7 @@ pipeline {
             steps {
                 script {
                     echo "Verifying test files in ${TEST_DIR}..."
-                    sh 'ls -R "${TEST_DIR}"'
+                    sh 'ls -R ${TEST_DIR}'  // List all files in the Unit Tests directory
                 }
             }
         }
@@ -58,7 +46,17 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh '${VENV_DIR}/bin/pytest ${TEST_DIR} -v --capture=no'
+                    // Run tests using pytest from the Unit Tests directory
+                    sh '${VENV_DIR}/bin/pytest ${TEST_DIR}'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Add deployment steps here if needed
+                    echo 'Deploying the application...'
                 }
             }
         }
@@ -66,16 +64,18 @@ pipeline {
 
     post {
         always {
+            // Clean up virtual environment
             sh 'rm -rf ${VENV_DIR}'
         }
         success {
-            echo 'Pipeline completed successfully.'
+            echo 'The pipeline completed successfully.'
         }
         failure {
-            echo 'Pipeline failed. Check logs for details.'
+            echo 'The pipeline failed.'
         }
     }
 }
+
 
 
 
