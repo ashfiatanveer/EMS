@@ -2,16 +2,15 @@ pipeline {
     agent any
 
     environment {
-        // Set the Python version and virtual environment directory
-        PYTHON_VERSION = 'python3.9'  // Adjust the Python version as needed
+        PYTHON_VERSION = 'python3.9'
         VENV_DIR = '.venv'
-        TEST_DIR = 'Unit Tests'  // Directory where the test files are located
+        TEST_ZIP = 'Unit Tests/task.zip'
+        TEST_DIR = 'Unit Tests/test_files'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the repository
                 checkout scm
             }
         }
@@ -19,7 +18,6 @@ pipeline {
         stage('Set up Python Environment') {
             steps {
                 script {
-                    // Install virtual environment
                     sh '${PYTHON_VERSION} -m venv ${VENV_DIR}'
                 }
             }
@@ -28,8 +26,17 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Install the dependencies from requirements.txt
                     sh '${VENV_DIR}/bin/pip install -r requirements.txt'
+                }
+            }
+        }
+
+        stage('Extract Test Files') {
+            steps {
+                script {
+                    // Ensure the zip file exists
+                    sh 'ls Unit\\ Tests'
+                    sh 'unzip -o ${TEST_ZIP} -d ${TEST_DIR}'
                 }
             }
         }
@@ -37,8 +44,8 @@ pipeline {
         stage('Verify Test Files') {
             steps {
                 script {
-                    echo "Verifying test files in ${TEST_DIR}..."
-                    sh 'ls -R ${TEST_DIR}'  // List all files in the Unit Tests directory
+                    echo "Verifying test files..."
+                    sh 'ls -R ${TEST_DIR}'
                 }
             }
         }
@@ -46,17 +53,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run tests using pytest from the Unit Tests directory
                     sh '${VENV_DIR}/bin/pytest ${TEST_DIR}'
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    // Add deployment steps here if needed
-                    echo 'Deploying the application...'
                 }
             }
         }
@@ -64,7 +61,6 @@ pipeline {
 
     post {
         always {
-            // Clean up virtual environment
             sh 'rm -rf ${VENV_DIR}'
         }
         success {
@@ -75,7 +71,3 @@ pipeline {
         }
     }
 }
-
-
-
-
