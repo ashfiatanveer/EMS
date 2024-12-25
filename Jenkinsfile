@@ -34,9 +34,8 @@ pipeline {
         stage('Extract Test Files') {
             steps {
                 script {
-                    // Ensure the zip file exists
-                    sh 'ls Unit\\ Tests'
-                    sh 'unzip -o ${TEST_ZIP} -d ${TEST_DIR}'
+                    sh 'ls Unit\\ Tests'  // Ensure the zip file exists
+                    sh 'unzip -o ${TEST_ZIP} -d ${TEST_DIR}'  // Extract the test files
                 }
             }
         }
@@ -45,7 +44,7 @@ pipeline {
             steps {
                 script {
                     echo "Verifying test files..."
-                    sh 'ls -R ${TEST_DIR}'
+                    sh 'ls -R ${TEST_DIR}'  // List the files to verify extraction
                 }
             }
         }
@@ -53,7 +52,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh '${VENV_DIR}/bin/pytest ${TEST_DIR}'
+                    sh '${VENV_DIR}/bin/pytest -v ${TEST_DIR}'  // Run the tests with verbose output
                 }
             }
         }
@@ -61,13 +60,14 @@ pipeline {
 
     post {
         always {
-            sh 'rm -rf ${VENV_DIR}'
+            sh 'rm -rf ${VENV_DIR}'  // Clean up the virtual environment
         }
         success {
             echo 'The pipeline completed successfully.'
+            junit '**/test-results.xml'  // Publish test results
         }
         failure {
             echo 'The pipeline failed.'
         }
     }
-} 
+}
